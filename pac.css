@@ -6,6 +6,10 @@
   border-style: ridge;
 }
 
+#win{
+  display: none;
+}
+
 p{
   display: none;
   font-size: 30px;

@@ -6,6 +6,10 @@ function bonesRemaining(){
   scoreBoard.innerText = ("Bones Left: " + parseInt(bones));
 }
 
+function livesRemaining(){
+  $('#lives').text("Lives Remaining: " + parseInt(lives));
+}
+
 var startTime;
 function timer() {
     var time = Date.now()-startTime;
@@ -31,12 +35,12 @@ function sutro(){
 }
 
 //starting position and current position of tiger
-var tigerX=170;
-var tigerY=100;
+var tigerX=140;
+var tigerY=15;
 
 //tiger parameters
-var tigerWidth = 75;
-var tigerHeight = 49;
+var tigerWidth = 65;
+var tigerHeight = 44;
 
 
 function tiger(){
@@ -44,12 +48,12 @@ function tiger(){
 }
 
 //starting position of the bear
-var bearX = 0;
+var bearX = 50;
 var bearY = 0;
 
 //bear parameters
 var bearWidth = 27;
-var bearHeight = 70;
+var bearHeight = 60;
 
 
 function bear(){
@@ -57,7 +61,16 @@ function bear(){
 }
 
 
-// -- CRAZY TIGER
+// -- CRAZY BEAR
+
+
+
+
+
+
+
+
+// -- Original Crazy
 
 //   var direction; 
 // function chooseDirection(){
@@ -164,9 +177,37 @@ function drawBall(){
             b.status=0;
             bones --; //updating the bones variable
             bonesRemaining(); //updating the board
+            win();
          }
      }
    }
+}
+
+//lives for Sutro
+var lives =2;
+
+
+
+function sutroEaten(){
+  if ((x+sutroWidth > tigerX && x < tigerX+tigerWidth && y+sutroHeight > tigerY && y < tigerY+tigerHeight)||(x+sutroWidth > bearX && x < bearX+bearWidth && y+sutroHeight > bearY && y < bearY+bearHeight)){
+    lives--;
+    livesRemaining();
+      if(lives <0){
+        alert("Game Over");
+        //add a loosing screen
+      } else {
+        x = canvas.width/2 +30
+        y = canvas.height-50
+        tigerX = 140;
+        tigerY =  15;
+        tDX= 1;
+        tDY= 0;
+        bearX= 50;
+        bearY= 0;
+        bDX= 2;
+        bDY= 0;
+      }
+  }
 }
 
 //parameters for the walls
@@ -282,7 +323,7 @@ function collisionWall(){
   }
 }
 
-//checking if tiger hit the wall
+//checking if tiger hit the wall ??? DONT THINK IM USING THIS FUNCTION 9:55AM
 function tigerCollisionWall(){
   for(var c=0; c<wallColumnCount; c++) {
     for(var r=0; r<wallRowCount; r++) {
@@ -294,18 +335,88 @@ function tigerCollisionWall(){
   }
 }
 
+//storing so he wont change direction on the same intersection over and over
+var lastHitIntersection;
+
+function bearCollisionInter(){
+  for(var c=0; c<interColumnCount; c++) {
+    for(var r=0; r< interRowCount; r++) {
+        var iB = intersections[c][r];
+        if (bearX+ (bearWidth * 2/3) > iB.x && bearX + (bearWidth/3) < iB.x+interRadius && bearY+(bearHeight * 2/3) > iB.y && bearY+(bearHeight/3) < iB.y+interRadius && lastHitIntersection !== iB) {
+            lastHitIntersection = intersections[c][r]; //storing so he wont change direction on the same intersection over and over
+            bearNextDirection();
+        }
+    }
+  }
+}
+
+
+//--------
+
+//var for direction of bear
+var bDX = 2.5;
+var bDY = 0;
+
+
+function bearNextDirection(){
+  var num = Math.random();//random number choosing the direction
+  if (lastHitIntersection === intersections[0][0] || lastHitIntersection == intersections[1][0] || lastHitIntersection == intersections[2][0]){
+    bDX = 0; //if he hits any of the top intersections, go down
+    bDY = 2.5;
+  } else if (lastHitIntersection === intersections[0][7] || lastHitIntersection == intersections[1][7] || lastHitIntersection == intersections[2][7]){
+    bDX =0; //if he hits any of the bottom intersections, go up
+    bDY = -2;
+  }else {
+    if (num < .25){
+      bDX = 3;
+      bDY = 0; 
+    } else if (num < .5){
+      bDX = -3;
+      bDY = 0; 
+    } else if (num < .75){
+      bDX = 0;
+      bDY = 2; 
+    } else {
+      bDX = 0;
+      bDY = -3; 
+    }
+  }
+}
+
+function bearCollisionSide(){
+  for(var c=0; c<sideColumnCount; c++) {
+    for(var r=0; r< sideRowCount; r++) {
+        var i = sideInts[c][r];
+        if (bearX+bearWidth > i.x && bearX < i.x+interRadius && bearY+bearHeight > i.y && bearY < i.y+interRadius) {
+            bearTurnAround();
+        }
+    }
+  }
+}
+
+function bearTurnAround(){
+  bDX = -bDX;
+};
+
+function bearMove(){
+  bearX += bDX;
+  bearY += bDY;
+}
+
+//--------------
+
 function tigerCollisionInter(){
   for(var c=0; c<interColumnCount; c++) {
     for(var r=0; r< interRowCount; r++) {
         var i = intersections[c][r];
-        if (tigerX+tigerWidth > i.x && tigerX < i.x+interRadius && tigerY+tigerHeight > i.y && tigerY < i.y+interRadius) {
+        if (tigerX+ (tigerWidth * 2/3) > i.x && tigerX + (tigerWidth/3) < i.x+interRadius && tigerY+ (tigerHeight *2/3) > i.y && tigerY +tigerHeight/3 < i.y+interRadius) {
             nextDirection();
         }
     }
   }
 }
-var tDX;
-var tDY;
+var tDX =1.5;
+var tDY =0;
 
 function tigerCollisionSide(){
   for(var c=0; c<sideColumnCount; c++) {
@@ -337,7 +448,7 @@ function nextDirection(){
       tDY = -1;
       tDX = 0;
     } else if (tigerY < y){
-      tDY =1;
+      tDY = 1;
       tDX = 0;
     }
   }
@@ -345,7 +456,6 @@ function nextDirection(){
 
 
 function tigerMove(){
-  console.log('tmove');
   tigerX += tDX;
   tigerY += tDY;
 }
@@ -411,29 +521,33 @@ function drawPac(){
   tigerCollisionInter();
   tigerCollisionSide();
   tigerMove();
+  bearCollisionInter();
+  bearCollisionSide();
+  sutroEaten();
+  bearMove();
   if(rightPressed && (x < canvas.width- sutroWidth)){
     if (collisionWall()){ //running code to see if the ball is inside the wall 
       x-=3;
     } else {
-      x += 1;
+      x += 2;
     }
   } else if(leftPressed && (x > 0)) {
     if (collisionWall()){
       x+=3;
     } else{
-      x -= 1;      
+      x -= 2;      
     }
   } else if (upPressed && (y > 0)){
     if (collisionWall()){
       y+=3;
     } else{
-      y -=1;
+      y -= 2;
     }
   } else if(downPressed && (y < canvas.height- sutroHeight)) {
     if (collisionWall()){
       y-=3;
     } else {
-    y += 1;
+    y += 2;
   }
   }
 }
@@ -448,6 +562,15 @@ $("#start").on('click',function (){
     startTime = Date.now();
    })
 });
+
+function win(){
+  console.log('hi');
+  if (bones ===0){
+    $('canvas').css('display', 'none');
+    $('#timer').css('display', 'none');
+      $('#win').css('display', 'inline-block');
+  }
+}
 
 
 
