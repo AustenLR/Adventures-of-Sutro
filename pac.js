@@ -61,11 +61,47 @@ function bear(){
 }
 
 
-// -- CRAZY BEAR
+//hippo parameters
+var hippoWidth = 100;
+var hippoHeight = 65;
+
+//hippo position 
+var hippoX;
+var hippoY;
+
+function hippo(){
+  ctx.drawImage(document.getElementById('hippoSource'), 0,0, 363, 268, hippoX, hippoY, hippoWidth, hippoHeight);
+}
 
 
+// -- hippo move
+
+// //how fast hippo moves
+// var hDX = 3;
+// var hippoStartingPoints =[];
+
+// //looping through to create the starting points off of the walls positions; needs to be after drawWall function
+// for (var i = 0; i < walls[3].length; i++){
+//     var yHipStart = walls[3][i].y - wallPadding + 5;
+//     var xHipStart = canvas.width - hippoWidth +20;
+//     hippoStartingPoints[i] = {x: xHipStart, y: yHipStart}
+
+// }
+
+// setInterval(hippoGo, 6000)
+
+// function hippoGo(){
+
+//   //new starting place, then go 
 
 
+// }
+
+// setInterval(hippoMove, 10)
+
+// function hippoMove(){
+//   hippoX -= hDX
+// }
 
 
 
@@ -189,7 +225,7 @@ var lives =2;
 
 
 function sutroEaten(){
-  if ((x+sutroWidth > tigerX && x < tigerX+tigerWidth && y+sutroHeight > tigerY && y < tigerY+tigerHeight)||(x+sutroWidth > bearX && x < bearX+bearWidth && y+sutroHeight > bearY && y < bearY+bearHeight)){
+  if ((x+sutroWidth > tigerX && x < tigerX+tigerWidth && y+sutroHeight > tigerY && y < tigerY+tigerHeight)||(x+sutroWidth > bearX && x < bearX+bearWidth && y+sutroHeight > bearY && y < bearY+bearHeight) || (x+sutroWidth > hippoX && x < hippoX+hippoWidth && y+sutroHeight > hippoY && y < hippoY+hippoHeight)){
     lives--;
     livesRemaining();
       if(lives <0){
@@ -244,6 +280,44 @@ function drawWall(){
     }
   }
 }
+
+
+//how fast hippo moves
+var hDX = 2.8;
+var hippoStartingPoints =[];
+
+//looping through to create the starting points for the hippo off of the walls positions; needs to be after drawWall function
+
+function setHippoStartingPoints(){
+  for (var i = 0; i < walls[3].length; i++){
+    var yHipStart = walls[3][i].y - (wallPadding + 5);
+    var xHipStart = canvas.width - hippoWidth +20;
+    hippoStartingPoints[i] = {x: xHipStart, y: yHipStart};
+  }
+}
+
+
+// setInterval(hippoGo, 6000)
+
+var hipNum;
+
+function hippoGo(){
+  setHippoStartingPoints(); //setting the starting points
+  hipNum = Math.floor((Math.random()*8));
+  hippoX = hippoStartingPoints[hipNum].x; //placing hippo at the start
+  hippoY = hippoStartingPoints[hipNum].y;
+  setInterval(hippoMove, 10); //moving the hippo 
+
+  //new starting place, then go 
+}
+
+//function to move the hippo
+function hippoMove(){
+  hippoX -= hDX;
+}
+
+
+
 
 //parameters for intersections
 var interColumnCount = 3;
@@ -510,6 +584,7 @@ function drawPac(){
   ctx.clearRect(0, 0, canvas.width, canvas.height); //clearing the whole canvas for each interval
   sutro();
   drawWall();
+  setHippoStartingPoints();
   drawBall();
   drawInter();
   drawSideInts();
@@ -517,6 +592,7 @@ function drawPac(){
   sutro();
   tiger();
   bear();
+  hippo();
   timer();
   tigerCollisionInter();
   tigerCollisionSide();
@@ -558,13 +634,12 @@ $("#start").on('click',function (){
     $('canvas').css('display',"inline");
     $('p').css('display',"inline-block");
     setInterval(drawPac, 10);
-    // setInterval(chooseDirection, 3000);
+    setInterval(hippoGo, 4000);
     startTime = Date.now();
    })
 });
 
 function win(){
-  console.log('hi');
   if (bones ===0){
     $('canvas').css('display', 'none');
     $('#timer').css('display', 'none');
