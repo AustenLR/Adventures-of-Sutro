@@ -1,179 +1,54 @@
+var lives =2;
+var paused = false;
 var bones = 49; //score
+
 var scoreBoard = document.getElementById("bones");
-var hippoTimer;
-var drawPacTimer;
-var pauseHippoMoveTimer;
-//update scoreboard
-function bonesRemaining(){
-  scoreBoard.innerText = ("Bones Left: " + parseInt(bones));
-}
-
-function livesRemaining(){
-  $('#lives').text("Lives Remaining: " + parseInt(lives));
-}
-
-var startTime;
-function timer() {
-    var time = Date.now()-startTime;
-    document.getElementById("timer").innerText = (time/1000).toFixed(0);
-}
-
 var canvas = document.getElementById("myCan"); //variable to use later cache
 var ctx = canvas.getContext("2d"); //variable to store the 2D rendering context - tool to paint on the canvas
 
+//timers
+var hippoTimer;
+var drawPacTimer;
+var pauseHippoMoveTimer;
+var startTime;
+var hipStayTimer;
+
 //variable for starting position and current position
-var x = canvas.width/2 +30; //where x is
-var y = canvas.height-50; //where y is
-var pacRadius = 6;
-
-
-//parameters for Sutro
-var sutroWidth = 36;
-var sutroHeight = 42;
-
-//drawing sutro
-function sutro(){
-  ctx.drawImage(document.getElementById('source'), 67,210,140,170, x,y, sutroWidth, sutroHeight);
-}
-
-//starting position and current position of tiger
+var x = canvas.width/2 +30; //sutro
+var y = canvas.height-50; 
 var tigerX=140;
 var tigerY=15;
-
-//tiger parameters
-var tigerWidth = 65;
-var tigerHeight = 44;
-
-
-function tiger(){
-  ctx.drawImage(document.getElementById('tigerSource'), 0,0,110,72, tigerX,tigerY, tigerWidth, tigerHeight);
-}
-
-//starting position of the bear
 var bearX = 50;
 var bearY = 0;
+var hippoX;
+var hippoY;
+var hippoStartingPoints =[];
+var hipNum;
 
-//bear parameters
+//size of animals
+var sutroWidth = 36;
+var sutroHeight = 42;
+var tigerWidth = 65;
+var tigerHeight = 44;
 var bearWidth = 27;
 var bearHeight = 60;
-
-
-function bear(){
-  ctx.drawImage(document.getElementById('bearSource'), 0,0,146,359, bearX, bearY, bearWidth, bearHeight);
-}
-
-
-//hippo parameters
 var hippoWidth = 100;
 var hippoHeight = 65;
 
-//hippo position 
-var hippoX;
-var hippoY;
+//variables for moving Sutro
+var rightPressed = false;
+var leftPressed = false;
+var upPressed = false;
+var downPressed = false;
 
-function hippo(){
-  ctx.drawImage(document.getElementById('hippoSource'), 0,0, 363, 268, hippoX, hippoY, hippoWidth, hippoHeight);
-}
+//staring direction/speed of enemies
+var hDX = 4.5;
+var bDX = 2.5;
+var bDY = 0;
+var tDX =1.5;
+var tDY =0;
 
-
-// -- hippo move
-
-// //how fast hippo moves
-// var hDX = 3;
-// var hippoStartingPoints =[];
-
-// //looping through to create the starting points off of the walls positions; needs to be after drawWall function
-// for (var i = 0; i < walls[3].length; i++){
-//     var yHipStart = walls[3][i].y - wallPadding + 5;
-//     var xHipStart = canvas.width - hippoWidth +20;
-//     hippoStartingPoints[i] = {x: xHipStart, y: yHipStart}
-
-// }
-
-// setInterval(hippoGo, 6000)
-
-// function hippoGo(){
-
-//   //new starting place, then go 
-
-
-// }
-
-// setInterval(hippoMove, 10)
-
-// function hippoMove(){
-//   hippoX -= hDX
-// }
-
-
-
-
-// -- Original Crazy
-
-//   var direction; 
-// function chooseDirection(){
-//   // var direction; 
-//   var num = Math.random();//random number choosing the direction
-//   if (num < .25){
-//     direction = 'north';
-//   } else if (num < .5){
-//     direction = 'south';
-//   } else if (num < .75){
-//     direction = 'east';
-//   } else {
-//     direction = 'west';
-//   }
-//   var IntervalID = setInterval(go, 10) //updated the same time amount of time as pacman code
-// }
-
-// function go(){
-//   if (direction === 'north'){
-//     if (tigerCollisionWall() || tigerY < 0 +tigerHeight){ //if the tiger hit the wall or boundary, go a different way 
-//       direction = 'west'; //new direction is west
-//       tigerX -= 3; //go west
-//     } else {
-//       tigerY -= 1;
-//     }
-//   } else if (direction === 'south'){
-//     if (tigerCollisionWall() || tigerY > canvas.height - tigerHeight){ //if the tiger hit the wall, go a different way 
-//       direction= 'east'; //will go east moving forward
-//       tigerX += 3; // go east
-//     } else{
-//       tigerY += 1;
-//     }
-//   } else if (direction === 'east'){
-//     if (tigerCollisionWall() || tigerX > canvas.width -tigerWidth){ //if the tiger hit the wall, go a different way 
-//       direction = 'north'; //will go up from now on
-//       tigerY -= 3; // go north
-//     } else{
-//       tigerX += 1;
-//     }
-//   } else if (direction === 'west'){
-//     if (tigerCollisionWall() || tigerX < 0){ //if the tiger hit the wall, go a different way 
-//       direction = 'south'; //now will go down
-//       tigerY += 3;
-//     } else{
-//       tigerX -= 1;
-//     }
-//   }
-// }
-
-  //need a timer ID probably only for the other setInterval
-//setInterval(chooseDirection, 3000)//in thousands of a second
-
-//set interval to go that way for that long
-//outside the interval is the direction
-//setTime out to rerun the direction
-
-//setup collision detection at each intersection
-  //run a function to determine which way to go 
-//go a direction based on sutro's X,Y coordinates 
-
-
-
-//------
-
-//variables for the bones and their parameters
+//variables for the bones
 var ballColumnCount = 7;
 var ballRowCount = 7;
 var ballWidth = 70;
@@ -182,9 +57,83 @@ var ballPaddingX = 65;
 var ballPaddingY = 35;
 var ballOffsetTop = 15; 
 var ballOffsetleft = 10;
+var balls=[]; //array to store balls
+//parameters for the walls
+var wallColumnCount = 4;
+var wallRowCount = 7;
+var wallWidth = 200;
+var wallHeight = 3;
+var wallPadding = 75;
+var wallOffsetTop= 75;
+var walls=[]; //array to store walls
+//parameters for intersections
+var interColumnCount = 3;
+var interRowCount = 8;
+var interRadius = 3;
+var intersections =[];
+var lastHitIntersection; //for bear
+//parameters for side intersections for Tiger and bear
+var sideColumnCount = 2;
+var sideRowCount = 8;
+var sideRadius = 3;
+var sideInts =[];
+
+
+
+//drawing sutro
+function sutro(){
+  ctx.drawImage(document.getElementById('source'), 67,210,140,170, x,y, sutroWidth, sutroHeight);
+}
+
+function tiger(){
+  ctx.drawImage(document.getElementById('tigerSource'), 0,0,110,72, tigerX,tigerY, tigerWidth, tigerHeight);
+}
+
+function bear(){
+  ctx.drawImage(document.getElementById('bearSource'), 0,0,146,359, bearX, bearY, bearWidth, bearHeight);
+}
+
+function hippo(){
+  ctx.drawImage(document.getElementById('hippoSource'), 0,0, 363, 268, hippoX, hippoY, hippoWidth, hippoHeight);
+}
+
+//Making Sutro Move - Event listeners for keydown and keyup on the controler
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+    if(e.keyCode == 39) {
+        rightPressed = true;
+    }
+    else if(e.keyCode == 37) {
+        leftPressed = true;
+    }
+    else if(e.keyCode == 38) {
+        upPressed = true;
+    }
+    else if(e.keyCode == 40) {
+        downPressed = true;
+    }
+}
+
+function keyUpHandler(e) {
+    if(e.keyCode == 39) {
+        rightPressed = false;
+    }
+    else if(e.keyCode == 37) {
+        leftPressed = false;
+    }
+    else if(e.keyCode == 38) {
+        upPressed = false;
+    }
+    else if(e.keyCode == 40) {
+        downPressed = false;
+    }
+}
+
+
 
 //creating the array of bones and setting them as objects to store their x y coordinates and status
-var balls=[];
 for (var c=0; c< ballColumnCount; c++){
   balls[c] =[];
   for (var r =0; r < ballRowCount; r++){
@@ -221,50 +170,8 @@ function drawBall(){
    }
 }
 
-var lives =2;
-
-
-function sutroEaten(){
-  if ((x+sutroWidth > tigerX && x < tigerX+tigerWidth && y+sutroHeight > tigerY && y < tigerY+tigerHeight)||(x+sutroWidth > bearX && x < bearX+bearWidth && y+sutroHeight > bearY && y < bearY+bearHeight) || (x+sutroWidth > hippoX && x < hippoX+hippoWidth && y+sutroHeight > hippoY && y < hippoY+hippoHeight)){
-    lives--;
-    livesRemaining();
-      if(lives <0){
-        $('canvas').css('display', 'none');
-        $('#timer').css('display', 'none');
-        $('#lost').css('display', 'inline-block');
-        $('#pause').css('display', 'none');
-        clearInterval(drawPacTimer);
-        clearInterval(pauseHippoMoveTimer);
-        clearInterval(hippoTimer);
-        lives = ':(';
-        $('#lives').text(':(');
-        //add a loosing screen
-      } else {
-        x = canvas.width/2 +30
-        y = canvas.height-50
-        tigerX = 140;
-        tigerY =  15;
-        tDX= 1;
-        tDY= 0;
-        bearX= 50;
-        bearY= 0;
-        bDX= 2;
-        bDY= 0;
-      }
-  }
-}
-
-//parameters for the walls
-var wallColumnCount = 4;
-var wallRowCount = 7;
-var wallWidth = 200;
-var wallHeight = 3;
-var wallPadding = 75;
-var wallOffsetTop= 75;
-
-
 //looping through rows and columns to create new walls
-var walls=[];
+
 for (var c=0; c<wallColumnCount; c++){
   walls[c] =[];
   for (var r =0; r <wallRowCount; r++){
@@ -289,13 +196,20 @@ function drawWall(){
   }
 }
 
+//checking if sutro hit the wall
+function collisionWall(){
+  for(var c=0; c<wallColumnCount; c++) {
+    for(var r=0; r<wallRowCount; r++) {
+        var w = walls[c][r];
+        if (x+sutroWidth > w.x && x < w.x+wallWidth && y+sutroHeight > w.y && y < w.y+wallHeight) { //added sutro's width and height accordingly so he cannot enter the wall
+           return true; 
+        }
+    }
+  }
+}
 
-//how fast hippo moves
-var hDX = 4.1;
-var hippoStartingPoints =[];
 
 //looping through to create the starting points for the hippo off of the walls positions; needs to be after drawWall function
-
 function setHippoStartingPoints(){
   for (var i = 0; i < walls[3].length; i++){
     var yHipStart = walls[3][i].y - (wallPadding + 1);
@@ -305,20 +219,13 @@ function setHippoStartingPoints(){
 }
 
 
-// setInterval(hippoGo, 6000)
-
-var hipNum;
-var hipStayTimer;
-
 function hippoGo(){
   clearInterval(hippoTimer);
   setHippoStartingPoints(); //setting the starting points
   hipNum = Math.ceil((Math.random()*7));
   hippoX = hippoStartingPoints[hipNum].x; //placing hippo at the start
   hippoY = hippoStartingPoints[hipNum].y;
-  hipStayTimer = setTimeout(hippoStay, 700) 
-
-  //new starting place, then go 
+  hipStayTimer = setTimeout(hippoStay, 650);  
 }
 
 function hippoStay(){
@@ -329,25 +236,13 @@ function hippoMove(){
   hippoX -= hDX;
 }
 
-
-
-
-//parameters for intersections
-var interColumnCount = 3;
-var interRowCount = 8;
-var interRadius = 3;
-
-
-//looping through to create intersections
-var intersections =[];
+//looping through to create intersections for the bear and tiger
 for (var c=0; c<interColumnCount; c++){
   intersections[c] =[];
   for (var r =0; r <interRowCount; r++){
     intersections[c][r]= { x:0, y:0};
   }
 }
-
-
 
 function drawInter(){
   for(var c=0; c<interColumnCount; c++) {
@@ -365,13 +260,7 @@ function drawInter(){
   }
 }
 
-//parameters for sides for Tiger
-var sideColumnCount = 2;
-var sideRowCount = 8;
-var sideRadius = 3;
-
-//looping through for sides for Tiger
-var sideInts =[];
+//looping through for sides for tiger and bear
 for (var c=0; c<sideColumnCount; c++){
   sideInts[c] =[];
   for (var r =0; r <sideRowCount; r++){
@@ -379,7 +268,6 @@ for (var c=0; c<sideColumnCount; c++){
   }
 }
 
-//intersections on the sides for the tiger
 function drawSideInts (){
   for(var c=0; c<sideColumnCount; c++) {
     for(var r=0; r<sideRowCount; r++) {
@@ -396,35 +284,6 @@ function drawSideInts (){
   }
 }
 
-
-
-//checking if sutro hit the wall
-function collisionWall(){
-  for(var c=0; c<wallColumnCount; c++) {
-    for(var r=0; r<wallRowCount; r++) {
-        var w = walls[c][r];
-        if (x+sutroWidth > w.x && x < w.x+wallWidth && y+sutroHeight > w.y && y < w.y+wallHeight) { //added sutro's width and height accordingly so he cannot enter the wall
-           return true; 
-        }
-    }
-  }
-}
-
-//checking if tiger hit the wall ??? DONT THINK IM USING THIS FUNCTION 9:55AM
-function tigerCollisionWall(){
-  for(var c=0; c<wallColumnCount; c++) {
-    for(var r=0; r<wallRowCount; r++) {
-        var w = walls[c][r];
-        if (tigerX+tigerWidth > w.x && tigerX < w.x+wallWidth && tigerY+tigerHeight > w.y && tigerY < w.y+wallHeight) { //added sutro's width and height accordingly so he cannot enter the wall
-           return true; 
-        }
-    }
-  }
-}
-
-//storing so he wont change direction on the same intersection over and over
-var lastHitIntersection;
-
 function bearCollisionInter(){
   for(var c=0; c<interColumnCount; c++) {
     for(var r=0; r< interRowCount; r++) {
@@ -436,14 +295,6 @@ function bearCollisionInter(){
     }
   }
 }
-
-
-//--------
-
-//var for direction of bear
-var bDX = 2.5;
-var bDY = 0;
-
 
 function bearNextDirection(){
   var num = Math.random();//random number choosing the direction
@@ -502,8 +353,7 @@ function tigerCollisionInter(){
     }
   }
 }
-var tDX =1.5;
-var tDY =0;
+
 
 function tigerCollisionSide(){
   for(var c=0; c<sideColumnCount; c++) {
@@ -547,48 +397,66 @@ function tigerMove(){
   tigerY += tDY;
 }
 
-//------------- moving PacMan
-//variables for moving pacman
-var rightPressed = false;
-var leftPressed = false;
-var upPressed = false;
-var downPressed = false;
-
-//Event listeners for keydown and keyup on the controler
-document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
-
-//Allowing user to control pacman - function to know if key is presssed
-function keyDownHandler(e) {
-    if(e.keyCode == 39) {
-        rightPressed = true;
-    }
-    else if(e.keyCode == 37) {
-        leftPressed = true;
-    }
-    else if(e.keyCode == 38) {
-        upPressed = true;
-    }
-    else if(e.keyCode == 40) {
-        downPressed = true;
-    }
+function bonesRemaining(){
+  scoreBoard.innerText = ("Bones Left: " + parseInt(bones));
 }
 
-//function for if the key is released to stop moving pacman
-function keyUpHandler(e) {
-    if(e.keyCode == 39) {
-        rightPressed = false;
-    }
-    else if(e.keyCode == 37) {
-        leftPressed = false;
-    }
-    else if(e.keyCode == 38) {
-        upPressed = false;
-    }
-    else if(e.keyCode == 40) {
-        downPressed = false;
-    }
+function livesRemaining(){
+  $('#lives').text("Lives Remaining: " + parseInt(lives));
 }
+
+function timer() {
+    var time = Date.now()-startTime;
+    document.getElementById("timer").innerText = (time/1000).toFixed(0);
+}
+
+
+
+function sutroEaten(){
+  if ((x+sutroWidth > tigerX && x < tigerX+tigerWidth && y+sutroHeight > tigerY && y < tigerY+tigerHeight)||(x+sutroWidth > bearX && x < bearX+bearWidth && y+sutroHeight > bearY && y < bearY+bearHeight) || (x+sutroWidth > hippoX && x < hippoX+hippoWidth && y+sutroHeight > hippoY && y < hippoY+hippoHeight)){
+    lives--;
+    livesRemaining();
+      if(lives <0){
+        $('canvas').css('display', 'none');
+        $('#timer').css('display', 'none');
+        $('#lost').css('display', 'inline-block');
+        $('#pause').css('display', 'none');
+        clearInterval(drawPacTimer);
+        clearInterval(pauseHippoMoveTimer);
+        clearInterval(hippoTimer);
+        lives = ':(';
+        $('#lives').text(':(');
+        //add a loosing screen
+      } else {
+        x = canvas.width/2 +30;
+        y = canvas.height-50;
+        tigerX = 140;
+        tigerY =  15;
+        tDX= 1;
+        tDY= 0;
+        bearX= 50;
+        bearY= 0;
+        bDX= 2;
+        bDY= 0;
+      }
+  }
+}
+
+function win(){
+  if (bones ===0){
+    clearInterval(drawPacTimer);
+    clearInterval(pauseHippoMoveTimer);
+    clearInterval(hippoTimer);
+    $('canvas').css('display', 'none');
+    $('#timer').css('display', 'none');
+    $('#pause').css('display', 'none');
+    $('#win').css('display', 'inline-block');
+  }
+}
+
+
+
+
 
 
 
@@ -612,8 +480,8 @@ function drawPac(){
   tigerMove();
   bearCollisionInter();
   bearCollisionSide();
-  sutroEaten();
   bearMove();
+  sutroEaten();
   if(rightPressed && (x < canvas.width- sutroWidth)){
     if (collisionWall()){ //running code to see if the ball is inside the wall 
       x-=3;
@@ -641,7 +509,8 @@ function drawPac(){
   }
 }
 
-var paused = false;
+
+$('#pause').on('click', pauseGame);
 
 function pauseGame(){
   if (!paused){
@@ -663,7 +532,6 @@ function pauseGame(){
   }
 }
 
-$('#pause').on('click', pauseGame);
 
 //button to start the game
 $("#start").on('click',function (){
@@ -676,21 +544,6 @@ $("#start").on('click',function (){
     startTime = Date.now();
    })
 });
-
-function win(){
-  if (bones ===0){
-    clearInterval(drawPacTimer);
-    clearInterval(pauseHippoMoveTimer);
-    clearInterval(hippoTimer);
-    $('canvas').css('display', 'none');
-    $('#timer').css('display', 'none');
-    $('#pause').css('display', 'none');
-    $('#win').css('display', 'inline-block');
-  }
-}
-
-
-
 
 
 
