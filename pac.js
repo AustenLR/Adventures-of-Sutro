@@ -1,6 +1,6 @@
 var bones = 42; //score
 var scoreBoard = document.getElementById("bones");
-
+var hippoTimer;
 //update scoreboard
 function bonesRemaining(){
   scoreBoard.innerText = ("Bones Left: " + parseInt(bones));
@@ -283,7 +283,7 @@ function drawWall(){
 
 
 //how fast hippo moves
-var hDX = 2.8;
+var hDX = 2;
 var hippoStartingPoints =[];
 
 //looping through to create the starting points for the hippo off of the walls positions; needs to be after drawWall function
@@ -302,11 +302,12 @@ function setHippoStartingPoints(){
 var hipNum;
 
 function hippoGo(){
+  clearInterval(hippoTimer);
   setHippoStartingPoints(); //setting the starting points
   hipNum = Math.floor((Math.random()*8));
   hippoX = hippoStartingPoints[hipNum].x; //placing hippo at the start
   hippoY = hippoStartingPoints[hipNum].y;
-  setInterval(hippoMove, 10); //moving the hippo 
+  hippoTimer = setInterval(hippoMove, 10); //moving the hippo 
 
   //new starting place, then go 
 }
