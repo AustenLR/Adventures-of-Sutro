@@ -1,4 +1,4 @@
-var bones = 42; //score
+var bones = 49; //score
 var scoreBoard = document.getElementById("bones");
 var hippoTimer;
 var drawPacTimer;
@@ -221,10 +221,8 @@ function drawBall(){
    }
 }
 
-//lives for Sutro
 var lives =2;
 
-// test
 
 function sutroEaten(){
   if ((x+sutroWidth > tigerX && x < tigerX+tigerWidth && y+sutroHeight > tigerY && y < tigerY+tigerHeight)||(x+sutroWidth > bearX && x < bearX+bearWidth && y+sutroHeight > bearY && y < bearY+bearHeight) || (x+sutroWidth > hippoX && x < hippoX+hippoWidth && y+sutroHeight > hippoY && y < hippoY+hippoHeight)){
@@ -293,14 +291,14 @@ function drawWall(){
 
 
 //how fast hippo moves
-var hDX = 2;
+var hDX = 4.1;
 var hippoStartingPoints =[];
 
 //looping through to create the starting points for the hippo off of the walls positions; needs to be after drawWall function
 
 function setHippoStartingPoints(){
   for (var i = 0; i < walls[3].length; i++){
-    var yHipStart = walls[3][i].y - (wallPadding + 5);
+    var yHipStart = walls[3][i].y - (wallPadding + 1);
     var xHipStart = canvas.width - hippoWidth +20;
     hippoStartingPoints[i] = {x: xHipStart, y: yHipStart};
   }
@@ -310,18 +308,22 @@ function setHippoStartingPoints(){
 // setInterval(hippoGo, 6000)
 
 var hipNum;
+var hipStayTimer;
 
 function hippoGo(){
   clearInterval(hippoTimer);
   setHippoStartingPoints(); //setting the starting points
-  hipNum = Math.floor((Math.random()*8));
+  hipNum = Math.ceil((Math.random()*7));
   hippoX = hippoStartingPoints[hipNum].x; //placing hippo at the start
   hippoY = hippoStartingPoints[hipNum].y;
-  hippoTimer = setInterval(hippoMove, 10); //moving the hippo 
+  hipStayTimer = setTimeout(hippoStay, 700) 
 
   //new starting place, then go 
 }
 
+function hippoStay(){
+  hippoTimer = setInterval(hippoMove, 10); //moving the hippo 
+}
 //function to move the hippo
 function hippoMove(){
   hippoX -= hDX;
