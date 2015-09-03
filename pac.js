@@ -16,10 +16,10 @@ var hipStayTimer;
 //variable for starting position and current position
 var x = canvas.width/2 +30; //sutro
 var y = canvas.height-50; 
-var tigerX=140;
-var tigerY=15;
+var tigerX=100;
+var tigerY= 5;
 var bearX = 50;
-var bearY = 0;
+var bearY = 10;
 var hippoX;
 var hippoY;
 var hippoStartingPoints =[];
@@ -32,8 +32,8 @@ var tigerWidth = 30;
 var tigerHeight = 65;
 var bearWidth = 56;
 var bearHeight = 57;
-var hippoWidth = 100;
-var hippoHeight = 65;
+var hippoWidth = 98;
+var hippoHeight = 62;
 
 //variables for moving Sutro
 var rightPressed = false;
@@ -42,7 +42,7 @@ var upPressed = false;
 var downPressed = false;
 
 //staring direction/speed of enemies
-var hDX = 5.1;
+var hDX = 5.8;
 var bDX = 2.5;
 var bDY = 0;
 var tDX =1.5;
@@ -212,8 +212,8 @@ function collisionWall(){
 //looping through to create the starting points for the hippo off of the walls positions; needs to be after drawWall function
 function setHippoStartingPoints(){
   for (var i = 0; i < walls[3].length; i++){
-    var yHipStart = walls[3][i].y - (wallPadding + 1);
-    var xHipStart = canvas.width - hippoWidth +20;
+    var yHipStart = walls[3][i].y - (wallPadding);
+    var xHipStart = canvas.width - hippoWidth + 75;
     hippoStartingPoints[i] = {x: xHipStart, y: yHipStart};
   }
 }
@@ -225,7 +225,7 @@ function hippoGo(){
   hipNum = Math.ceil((Math.random()*7));
   hippoX = hippoStartingPoints[hipNum].x; //placing hippo at the start
   hippoY = hippoStartingPoints[hipNum].y;
-  hipStayTimer = setTimeout(hippoStay, 650);  
+  hipStayTimer = setTimeout(hippoStay, 600);  
 }
 
 function hippoStay(){
@@ -288,7 +288,7 @@ function bearCollisionInter(){
   for(var c=0; c<interColumnCount; c++) {
     for(var r=0; r< interRowCount; r++) {
         var iB = intersections[c][r];
-        if (bearX+ (bearWidth * 2/3) > iB.x && bearX + (bearWidth/3) < iB.x+interRadius && bearY+(bearHeight * 2/3) > iB.y && bearY+(bearHeight/3) < iB.y+interRadius && lastHitIntersection !== iB) {
+        if (bearX+ (bearWidth * .6) > iB.x && bearX + (bearWidth * .4) < iB.x+interRadius && bearY+(bearHeight * .6) > iB.y && bearY+(bearHeight * .4) < iB.y+interRadius && lastHitIntersection !== iB) {
             lastHitIntersection = intersections[c][r]; //storing so he wont change direction on the same intersection over and over
             bearNextDirection();
         }
@@ -306,17 +306,17 @@ function bearNextDirection(){
     bDY = -2;
   }else {
     if (num < .25){
-      bDX = 3;
+      bDX = 3.7;
       bDY = 0; 
     } else if (num < .5){
-      bDX = -3;
+      bDX = -3.6;
       bDY = 0; 
     } else if (num < .75){
       bDX = 0;
-      bDY = 2; 
+      bDY = 3.4; 
     } else {
       bDX = 0;
-      bDY = -3; 
+      bDY = -3.8; 
     }
   }
 }
@@ -347,7 +347,7 @@ function tigerCollisionInter(){
   for(var c=0; c<interColumnCount; c++) {
     for(var r=0; r< interRowCount; r++) {
         var i = intersections[c][r];
-        if (tigerX+ (tigerWidth * 2/3) > i.x && tigerX + (tigerWidth/3) < i.x+interRadius && tigerY+ (tigerHeight *2/3) > i.y && tigerY +tigerHeight/3 < i.y+interRadius) {
+        if (tigerX+ (tigerWidth * .60) > i.x && tigerX + (tigerWidth * .40) < i.x+interRadius && tigerY+ (tigerHeight *.60) > i.y && tigerY +tigerHeight * .40 < i.y+interRadius) {
             nextDirection();
         }
     }
@@ -373,19 +373,19 @@ function turnAround(){
 function nextDirection(){
   if (Math.abs(tigerX -x) > Math.abs(tigerY - y)){
     if (tigerX > x){
-      tDX = -1;
+      tDX = -1.4;
       tDY = 0;
     } else if (tigerX < x){
-     tDX = 1;
+     tDX = 1.3;
      tDY = 0;
     }
   }
   else {
     if (tigerY > y){
-      tDY = -1;
+      tDY = -1.5;
       tDX = 0;
     } else if (tigerY < y){
-      tDY = 1;
+      tDY = 1.2;
       tDX = 0;
     }
   }
@@ -431,11 +431,11 @@ function sutroEaten(){
         x = canvas.width/2 +30;
         y = canvas.height-50;
         tigerX = 140;
-        tigerY =  15;
+        tigerY =  10;
         tDX= 1;
         tDY= 0;
         bearX= 50;
-        bearY= 0;
+        bearY= 10;
         bDX= 2;
         bDY= 0;
       }
@@ -455,7 +455,17 @@ function win(){
 }
 
 
-
+function dontGoInWall(){
+  if(x > canvas.width- sutroWidth){
+    x-=10; 
+  } else if(x < 0){
+    x+=10;
+  } else if (y < 0){
+    y+= 10;
+  } else if(y > canvas.height) {
+    y-=10;
+  }
+}
 
 
 
@@ -482,29 +492,30 @@ function drawPac(){
   bearCollisionSide();
   bearMove();
   sutroEaten();
+  dontGoInWall();
   if(rightPressed && (x < canvas.width- sutroWidth)){
     if (collisionWall()){ //running code to see if the ball is inside the wall 
       x-=3;
     } else {
-      x += 2;
+      x += 2.2;
     }
   } else if(leftPressed && (x > 0)) {
     if (collisionWall()){
       x+=3;
     } else{
-      x -= 2;      
+      x -= 2.2;      
     }
   } else if (upPressed && (y > 0)){
     if (collisionWall()){
       y+=3;
     } else{
-      y -= 2;
+      y -= 2.2;
     }
   } else if(downPressed && (y < canvas.height- sutroHeight)) {
     if (collisionWall()){
       y-=3;
     } else {
-    y += 2;
+    y += 2.2;
   }
   }
 }
@@ -527,7 +538,6 @@ function pauseGame(){
     drawPacTimer = setInterval(drawPac, 10);
     pauseHippoMoveTimer = setInterval(hippoGo, 4000);
      $('#pause').text('Pause');
-    // hippoTimer = setInterval(HippoMove ,10);
     paused = false;
   }
 }
@@ -540,7 +550,7 @@ $("#start").on('click',function (){
     $('p').css('display',"inline-block");
     $('#pause').css('display','inline-block');
     drawPacTimer = setInterval(drawPac, 10);
-    pauseHippoMoveTimer = setInterval(hippoGo, 4000);
+    pauseHippoMoveTimer = setInterval(hippoGo, 3500);
     startTime = Date.now();
    })
 });
