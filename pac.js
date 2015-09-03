@@ -26,12 +26,12 @@ var hippoStartingPoints =[];
 var hipNum;
 
 //size of animals
-var sutroWidth = 36;
-var sutroHeight = 42;
-var tigerWidth = 65;
-var tigerHeight = 44;
-var bearWidth = 27;
-var bearHeight = 60;
+var sutroWidth = 41;
+var sutroHeight = 49;
+var tigerWidth = 30;
+var tigerHeight = 65;
+var bearWidth = 56;
+var bearHeight = 57;
 var hippoWidth = 100;
 var hippoHeight = 65;
 
@@ -42,7 +42,7 @@ var upPressed = false;
 var downPressed = false;
 
 //staring direction/speed of enemies
-var hDX = 4.5;
+var hDX = 5.1;
 var bDX = 2.5;
 var bDY = 0;
 var tDX =1.5;
@@ -82,15 +82,15 @@ var sideInts =[];
 
 //drawing sutro
 function sutro(){
-  ctx.drawImage(document.getElementById('source'), 67,210,140,170, x,y, sutroWidth, sutroHeight);
+  ctx.drawImage(document.getElementById('sutroMaja'), 0, 0, 191, 204, x,y, sutroWidth, sutroHeight);
 }
 
 function tiger(){
-  ctx.drawImage(document.getElementById('tigerSource'), 0,0,110,72, tigerX,tigerY, tigerWidth, tigerHeight);
+  ctx.drawImage(document.getElementById('tigerSource'), 0, 0, 146,353, tigerX,tigerY, tigerWidth, tigerHeight);
 }
 
 function bear(){
-  ctx.drawImage(document.getElementById('bearSource'), 0,0,146,359, bearX, bearY, bearWidth, bearHeight);
+  ctx.drawImage(document.getElementById('bearSource'), 5,5, 380,395, bearX, bearY, bearWidth, bearHeight);
 }
 
 function hippo(){
