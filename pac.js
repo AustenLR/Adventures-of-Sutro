@@ -1,3 +1,8 @@
+$('body').css({'overflow':'hidden'});
+$(document).bind('scroll',function () { 
+    window.scrollTo(0,0); 
+  });
+
 var lives =2;
 var paused = false;
 var bones = 49; //score
@@ -300,20 +305,20 @@ function bearNextDirection(){
   var num = Math.random();//random number choosing the direction
   if (lastHitIntersection === intersections[0][0] || lastHitIntersection == intersections[1][0] || lastHitIntersection == intersections[2][0]){
     bDX = 0; //if he hits any of the top intersections, go down
-    bDY = 2.5;
+    bDY = 2.7;
   } else if (lastHitIntersection === intersections[0][7] || lastHitIntersection == intersections[1][7] || lastHitIntersection == intersections[2][7]){
     bDX =0; //if he hits any of the bottom intersections, go up
-    bDY = -2;
+    bDY = -2.6;
   }else {
     if (num < .25){
       bDX = 3.7;
       bDY = 0; 
     } else if (num < .5){
-      bDX = -3.6;
+      bDX = -4.0;
       bDY = 0; 
     } else if (num < .75){
       bDX = 0;
-      bDY = 3.4; 
+      bDY = 3.9; 
     } else {
       bDX = 0;
       bDY = -3.8; 
@@ -424,14 +429,19 @@ function sutroEaten(){
         clearInterval(drawPacTimer);
         clearInterval(pauseHippoMoveTimer);
         clearInterval(hippoTimer);
-        lives = ':(';
-        $('#lives').text(':(');
-        //add a loosing screen
+        $('#lives').text('Noooooooooo');
       } else {
+        hippoX = -100;
+        hippoY = -100;
+        paused = true;
         x = canvas.width/2 +30;
         y = canvas.height-50;
         tigerX = 140;
         tigerY =  10;
+        clearInterval(drawPacTimer);
+        clearInterval(pauseHippoMoveTimer);
+        clearInterval(hippoTimer);
+        $('#pause').text('Continue - Use Next Lift');
         tDX= 1;
         tDY= 0;
         bearX= 50;
@@ -525,7 +535,6 @@ $('#pause').on('click', pauseGame);
 
 function pauseGame(){
   if (!paused){
-    console.log('pause');
     clearInterval(drawPacTimer);
     clearInterval(pauseHippoMoveTimer);
     clearInterval(hippoTimer);
@@ -534,7 +543,6 @@ function pauseGame(){
     hippoY = -100;
     paused = true;
   } else if (paused){
-    console.log('resume');
     drawPacTimer = setInterval(drawPac, 10);
     pauseHippoMoveTimer = setInterval(hippoGo, 4000);
      $('#pause').text('Pause');
