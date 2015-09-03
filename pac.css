@@ -10,6 +10,14 @@
   display: none;
 }
 
+#lost{
+  display:none;
+}
+
+#pause{
+  display:none;
+}
+
 p{
   display: none;
   font-size: 30px;

@@ -1,6 +1,8 @@
 var bones = 42; //score
 var scoreBoard = document.getElementById("bones");
 var hippoTimer;
+var drawPacTimer;
+var pauseHippoMoveTimer;
 //update scoreboard
 function bonesRemaining(){
   scoreBoard.innerText = ("Bones Left: " + parseInt(bones));
@@ -229,7 +231,15 @@ function sutroEaten(){
     lives--;
     livesRemaining();
       if(lives <0){
-        alert("Game Over");
+        $('canvas').css('display', 'none');
+        $('#timer').css('display', 'none');
+        $('#lost').css('display', 'inline-block');
+        $('#pause').css('display', 'none');
+        clearInterval(drawPacTimer);
+        clearInterval(pauseHippoMoveTimer);
+        clearInterval(hippoTimer);
+        lives = ':(';
+        $('#lives').text(':(');
         //add a loosing screen
       } else {
         x = canvas.width/2 +30
@@ -629,22 +639,51 @@ function drawPac(){
   }
 }
 
+var paused = false;
+
+function pauseGame(){
+  if (!paused){
+    console.log('pause');
+    clearInterval(drawPacTimer);
+    clearInterval(pauseHippoMoveTimer);
+    clearInterval(hippoTimer);
+    $('#pause').text('Resume');
+    hippoX = -100;
+    hippoY = -100;
+    paused = true;
+  } else if (paused){
+    console.log('resume');
+    drawPacTimer = setInterval(drawPac, 10);
+    pauseHippoMoveTimer = setInterval(hippoGo, 4000);
+     $('#pause').text('Pause');
+    // hippoTimer = setInterval(HippoMove ,10);
+    paused = false;
+  }
+}
+
+$('#pause').on('click', pauseGame);
+
 //button to start the game
 $("#start").on('click',function (){
    $("#slideUpBox").slideUp(2000,function(){
     $('canvas').css('display',"inline");
     $('p').css('display',"inline-block");
-    setInterval(drawPac, 10);
-    setInterval(hippoGo, 4000);
+    $('#pause').css('display','inline-block');
+    drawPacTimer = setInterval(drawPac, 10);
+    pauseHippoMoveTimer = setInterval(hippoGo, 4000);
     startTime = Date.now();
    })
 });
 
 function win(){
   if (bones ===0){
+    clearInterval(drawPacTimer);
+    clearInterval(pauseHippoMoveTimer);
+    clearInterval(hippoTimer);
     $('canvas').css('display', 'none');
     $('#timer').css('display', 'none');
-      $('#win').css('display', 'inline-block');
+    $('#pause').css('display', 'none');
+    $('#win').css('display', 'inline-block');
   }
 }
 
