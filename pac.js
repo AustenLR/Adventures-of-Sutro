@@ -258,7 +258,7 @@ function drawInter(){
         intersections[c][r].y = interY;
         ctx.beginPath();
         ctx.arc(interX, interY, interRadius,0, Math.PI*2);
-        ctx.fillStyle = "purple";
+        ctx.fillStyle = "white";
         ctx.fill();
         ctx.closePath();
     }
@@ -282,7 +282,7 @@ function drawSideInts (){
         sideInts[c][r].y = sideY;
         ctx.beginPath();
         ctx.arc(sideX, sideY, sideRadius,0, Math.PI*2);
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "white";
         ctx.fill();
         ctx.closePath();
     }
